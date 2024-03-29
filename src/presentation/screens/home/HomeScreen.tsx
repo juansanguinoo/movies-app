@@ -1,18 +1,55 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 import {useMovies} from '../../hooks/useMovies';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {ScrollView} from 'react-native-gesture-handler';
+import {
+  FullScreenLoader,
+  HorizontalCarousel,
+  PosterCarousel,
+} from '../../components';
 
 export const HomeScreen = () => {
-  const {nowPlaying, upcoming, topRated, popular} = useMovies();
+  const {top} = useSafeAreaInsets();
+  const {
+    isLoading,
+    nowPlaying,
+    popular,
+    topRated,
+    upcoming,
+    popularNextPage,
+    topRatedNextPage,
+    upcomingNextPage,
+  } = useMovies();
 
-  console.log('peliculas en cartelera', nowPlaying[0]);
-  console.log('peliculas a punto de estrenarse', upcoming[0]);
-  console.log('peliculas mejor valoradas', topRated[0]);
-  console.log('peliculas populares', popular[0]);
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
 
   return (
-    <View>
-      <Text>Home Screen</Text>
-    </View>
+    <ScrollView>
+      <View style={{marginTop: top + 20, paddingBottom: 30}}>
+        <PosterCarousel movies={nowPlaying} />
+
+        <HorizontalCarousel
+          movies={popular}
+          title="Populares"
+          loadNextPage={popularNextPage}
+        />
+
+        <HorizontalCarousel
+          movies={topRated}
+          title="Mejor calificadas"
+          loadNextPage={topRatedNextPage}
+        />
+
+        <HorizontalCarousel
+          movies={upcoming}
+          title="Próximamente"
+          loadNextPage={upcomingNextPage}
+        />
+      </View>
+    </ScrollView>
   );
 };
